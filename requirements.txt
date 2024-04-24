@@ -1,0 +1,8 @@
+uvicorn
+fastapi
+opencv-python
+python-multipart
+matplotlib
+numpy
+PIL
+json
