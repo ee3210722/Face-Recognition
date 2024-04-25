@@ -15,13 +15,6 @@ import base64
 import os
 import cloudinary.uploader
 
-# Customizing JSON encoder for numpy arrays
-class NumpyArrayEncoder(JSONEncoder):
-    def default(self, obj):
-        if isinstance(obj, np.ndarray):
-            return obj.tolist()
-        return JSONEncoder.default(self, obj)
-
 # Initializing a FastAPI
 app = FastAPI()
 
@@ -31,6 +24,7 @@ app.add_middleware(
     allow_origins=["*"],
     allow_methods=["POST", "PUT", "DELETE", "GET", "OPTIONS"],
 )
+
 
 # Configuring cloudinary with credentials
 cloudinary.config(
@@ -69,6 +63,7 @@ async def make_bounding_box(image: UploadFile = File(...)):
 
     # Converting image to RGB for display
     img_rgb = cv2.cvtColor(decoded, cv2.COLOR_BGR2RGB)
+
     img = Image.fromarray(img_rgb)
     
     # Displaying image
@@ -89,7 +84,6 @@ async def make_bounding_box(image: UploadFile = File(...)):
     # Deleting the temporary file
     os.remove('temp.jpg')
 
-    # Preparing response data
     result = {
         "face_present": face_present,
         "data": upload_result['secure_url']  # The URL of the uploaded image
@@ -99,7 +93,6 @@ async def make_bounding_box(image: UploadFile = File(...)):
     return JSONResponse(content=jsonable_encoder({"status": 200, "message": "annotated", "result": result}))
 
 
-# Entry point of the application
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run FastApi app")
     parser.add_argument("-p", "--port", type=int, default=8084)
